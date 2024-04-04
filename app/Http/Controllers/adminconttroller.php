@@ -14,6 +14,11 @@ class adminconttroller extends Controller
     {
         $this->middleware('auth')->except(['registirationform','registiration','loginform']);
     }
+    public function index()
+    {
+       $data = User::get();
+       return response()->json($data);
+    }
     public function registirationform()
     {
           return view('registerform');

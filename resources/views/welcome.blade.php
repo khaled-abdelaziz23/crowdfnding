@@ -17,7 +17,7 @@
     </head>
     <body class="antialiased">
     <a href="{{route('user.registirationform')}}">registeration</a>
- 
+    <a href="{{route('index.user')}}">users</a>
     
 
 

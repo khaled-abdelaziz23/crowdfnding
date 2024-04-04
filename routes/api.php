@@ -18,5 +18,7 @@ use App\Http\Controllers\adminconttroller;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::post('login', [adminconttroller::class , 'loginn'])->name('login.login')->middleware('logintokin');
 Route::post('logoutt', [adminconttroller::class , 'logoutt'])->name('logoutt.user')->middleware('logintokin');
+Route::post('index', [adminconttroller::class , 'index'])->name('index.user');
