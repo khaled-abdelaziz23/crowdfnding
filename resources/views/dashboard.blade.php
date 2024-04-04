@@ -7,14 +7,14 @@
     <title>Document</title>
 </head>
 <body>
-     {{auth()->user()->id}}<br>
-     
-     
+  
+
+
      
      
     <a href="">users</a><br>
     <a href="{{route('logout.user')}}">logout</a><br>
     <a href="{{route('user.edit',auth()->user()->id)}}">edit</a><br>
-   
+ 
 </body>
 </html>

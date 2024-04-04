@@ -56,17 +56,19 @@ class adminconttroller extends Controller
     {
         
         $user = $request->only('email' ,'password' );
-     
-        if (Auth::attempt($user) && Auth::user()->role=='admin'  ) {
-            
-                 return redirect()->route('admin.only');
-            }
-          else {
-            return view('welcome');
-          }
+        
+
+        $token=Auth::guard('logintokin')->attempt($user)  ;
+          
+        $admin = Auth::guard('logintokin')->user();
+        $admin->api_token = $token;  
+                
+                return response()->json($admin);
+                //   return redirect()->route('admin.only');
+                  
         }
 
-
+        // && Auth::user()->role=='admin'
 
 
 
@@ -104,7 +106,23 @@ public function admin()
     return view('dashboard');
 
 }
-  
+public function logoutt(Request $request )
+{
+    $token = $request -> header('auth-token');
+    if($token){
+        try {
+
+            JWTAuth::setToken($token)->invalidate(); //logout
+        }catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e){
+              return response()->json([ 'status' => false,'msg' => 'wtf']);
+              
+              
+        }
+        return response()->json([ 'status' => false,'msg' => 'wth']);
+    }else{
+        return response()->json([ 'status' => false,'msg' => 'holly']);
+    }
+}
 
 
 }

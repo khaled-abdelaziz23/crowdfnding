@@ -33,11 +33,13 @@ Route::get(' logout', [adminconttroller::class , 'logout'])->name('logout.user')
 
 
 
+
+
 Route::prefix('user')->middleware(['guest', 'web'])->group(function () {
 
 Route::get('registerationform', [adminconttroller::class , 'registirationform'])->name('user.registirationform');
 Route::post('registeration', [adminconttroller::class , 'registiration'])->name('user.registiration');
-Route::post('login', [adminconttroller::class , 'loginn'])->name('login.login');
+
 
 
 
