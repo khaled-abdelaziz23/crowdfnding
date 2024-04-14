@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Hash;
 use Session;
+use Validator;
 use Illuminate\Support\Facades\Auth;
 
 class adminconttroller extends Controller
@@ -19,16 +20,10 @@ class adminconttroller extends Controller
        $data = User::get();
        return response()->json($data);
     }
-    public function registirationform()
-    {
-          return view('registerform');
-    }
+   
     public function registiration(Request $request)
     {
-        $fileexetintion = $request->photo->getClientOriginalExtension();
-        $filename = date('Y-m-d ... h-i-s').'.'.$fileexetintion;
-        $path = 'images/usersphotos';
-        $request->photo->move($path,$filename);
+     
 
         $request->validate([
             'name'=>'required',
@@ -40,42 +35,42 @@ class adminconttroller extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->profile_photo = $request->photo;
         $res = $user->save();
         if ($res) {
-            return back()->with('success' , 'ok');
+           return response()->json(['massege'=>'regestration successfully']);
         }
         else {
-            return back()->with('fail' , ' not ok');
+            return response()->json(['massege'=>'regestration fail']);
         }
         
           
-    }
-
-    public function loginform()
-    {
-        return view('loginform');
     }
 
     public function loginn(Request $request)
     {
-        
         $user = $request->only('email' ,'password' );
-        
-
-        $token=Auth::guard('logintokin')->attempt($user)  ;
-          
-        $admin = Auth::guard('logintokin')->user();
-        $admin->api_token = $token;  
-                
-                return response()->json($admin);
-                //   return redirect()->route('admin.only');
-                  
+        $roleuser=Auth::guard('logintokin')->attempt($user);
+        if ($roleuser) {
+            if ( auth()->guard('logintokin')->user()->role = 'user') {
+              return response()->json( ['user token'=>$roleuser ,'user data'=>auth()->guard('logintokin')->user()]); 
+            }
+            else {       
+                 return response()->json( ['admin token'=>$roleuser ,'admin data'=>auth()->guard('logintokin')->user()]); 
+            }
+            $user = Auth::guard('logintokin')->user(); 
+             $user->remember_token = $roleuser;
+            $user->save();
         }
+         
+            
+        
+        // $token=Auth::guard('logintokin')->attempt($user) ;
+        // $user = Auth::guard('logintokin')->user(); 
+        // $user->remember_token = $token;
+        // $user->save(); 
+        // return response()->json( ['user token'=>$token ,'user data'=>auth()->guard('logintokin')->user()]); 
 
-        // && Auth::user()->role=='admin'
-
-
+        }
 
     public function edit($id)
         {
@@ -90,12 +85,16 @@ class adminconttroller extends Controller
        
         $item = User::findOrFail($id);
         $item->phone = $request->phone;
+        $item->name = $request->name;
+        $item->email = $request->email;
+        
         $res = $item->save();
 
         if ($res) {
-            return view('welcome');
+           return response()->json(['massege'=>'updated successfully' , $res ]);
         }
-        return 'fail';
+        return response()->json(['massege'=>'fail']);
+
         
         
     }
@@ -113,20 +112,12 @@ public function admin()
 }
 public function logoutt(Request $request )
 {
-    $token = $request -> header('auth-token');
-    if($token){
-        try {
+   
+    $request->user()->currentAccessToken()->delete();
 
-            JWTAuth::setToken($token)->invalidate(); //logout
-        }catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e){
-              return response()->json([ 'status' => false,'msg' => 'wtf']);
-              
-              
-        }
-        return response()->json([ 'status' => false,'msg' => 'wth']);
-    }else{
-        return response()->json([ 'status' => false,'msg' => 'holly']);
-    }
+        return response()->json(['message' => 'Logout successful']);
+    
+
 }
 
 

@@ -23,8 +23,6 @@ Route::prefix('user')->middleware(['auth', 'web'])->group(function () {
 
 
 Route::get('edit/{id}', [adminconttroller::class , 'edit'])->name('user.edit');
-Route::put('update/{id}', [adminconttroller::class , 'update'])->name('user.update');
-Route::get(' logout', [adminconttroller::class , 'logout'])->name('logout.user');
 
 });
 
@@ -38,7 +36,7 @@ Route::get(' logout', [adminconttroller::class , 'logout'])->name('logout.user')
 Route::prefix('user')->middleware(['guest', 'web'])->group(function () {
 
 Route::get('registerationform', [adminconttroller::class , 'registirationform'])->name('user.registirationform');
-Route::post('registeration', [adminconttroller::class , 'registiration'])->name('user.registiration');
+//Route::post('registeration', [adminconttroller::class , 'registiration'])->name('user.registiration');
 
 
 
