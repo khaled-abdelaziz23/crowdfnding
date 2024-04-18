@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('login', [adminconttroller::class , 'loginn'])->name('login.login')->middleware('logintokin');
 Route::post('logoutt', [adminconttroller::class , 'logoutt'])->name('logoutt.user')->middleware('logintokin');
-Route::post('index', [adminconttroller::class , 'index'])->name('index.user');
+Route::get('index', [adminconttroller::class , 'index'])->name('index.user');
 
 Route::prefix('user')->middleware(['guest'])->group(function () {});
 Route::put('update/{id}', [adminconttroller::class , 'update'])->name('user.update');
