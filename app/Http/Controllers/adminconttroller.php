@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Admin;
 use App\Models\User;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Hash;
 use Session;
@@ -20,7 +20,28 @@ class adminconttroller extends Controller
        $data = User::get();
        return response()->json($data);
     }
-   
+   public function show($id)
+   {
+      $data = User::find($id);
+      if ($data) {
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'post' => $data->toArray()],
+           
+            'message' => 'Post retrieved successfully',
+        ]);
+    }
+    else {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'user not found (id is wrong)',
+        ]);
+    }
+
+
+   }
     public function registiration(Request $request)
     {
      
@@ -28,7 +49,7 @@ class adminconttroller extends Controller
         $request->validate([
             'name'=>'required',
             'email'=>'required |  email',
-            'password'=>'required|max:16|min:6',
+            'password'=>'required|min:6',
             
         ]);
         $user = new User;
@@ -45,41 +66,59 @@ class adminconttroller extends Controller
         
           
     }
+    public function userphoto(Request $request , $id)
+    {
+        $image_name = rand() . '.' .$request->profile_photo->getClientOriginalExtension(); 
+        $request->profile_photo->move(public_path('/images/usersphotos'),$image_name);
+        $user = User::findOrFail($id);
+        $user->profile_photo = asset('images/usersphotos/' . $image_name); 
+        $res = $user->save();
+        if ($res) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                'user' => $user,
+            ]);}
+    }
 
     public function loginn(Request $request)
     {
-        $user = $request->only('email' ,'password' );
-        $roleuser=Auth::guard('logintokin')->attempt($user);
-        if ($roleuser) {
-            if ( auth()->guard('logintokin')->user()->role = 'user') {
-              return response()->json( ['user token'=>$roleuser ,'user data'=>auth()->guard('logintokin')->user()]); 
-            }
-            else {       
-                 return response()->json( ['admin token'=>$roleuser ,'admin data'=>auth()->guard('logintokin')->user()]); 
-            }
-            $user = Auth::guard('logintokin')->user(); 
-             $user->remember_token = $roleuser;
-            $user->save();
-        }
-         
-            
+        $user = $request->only('email' ,'password');
+        $token=Auth::guard('logintokin')->attempt($user);
+         $user = Auth::guard('logintokin')->user(); 
+         $user->remember_token = $token;
+         $user->save();
         
-        // $token=Auth::guard('logintokin')->attempt($user) ;
-        // $user = Auth::guard('logintokin')->user(); 
-        // $user->remember_token = $token;
-        // $user->save(); 
-        // return response()->json( ['user token'=>$token ,'user data'=>auth()->guard('logintokin')->user()]); 
-
-        }
-
-    public function edit($id)
-        {
-            $item = User::findOrFail($id);
-            if ($item) {
-                return view('edit', compact('item'));
+            if ( auth()->guard('logintokin')->user()->role=='user') {
+                
+                return response()->json( ['user_token'=>$token ,'user_data'=>auth()->guard('logintokin')->user()]); 
             }
-            
+          else {       
+                 return response()->json( ['admin_token'=>$token ,'admin_data'=>auth()->guard('logintokin')->user()]); 
+            }
+           
         }
+  
+    public function adduser(Request $request)
+    {
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->phone = $request->phone;
+        $user->role = $request->role;
+        $user->address = $request->address;
+        $user->National_id = $request->National_id;
+        $res= $user->save();
+        if ($res) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User created successfully',
+                'user' => $user,
+            ]);}
+      
+
+    }
     public function update(Request $request ,$id)
     {
        
@@ -87,11 +126,13 @@ class adminconttroller extends Controller
         $item->phone = $request->phone;
         $item->name = $request->name;
         $item->email = $request->email;
-        
+        $item->role = $request->role;
+        $item->address = $request->address;
+        $item->National_id = $request->National_id;
         $res = $item->save();
 
         if ($res) {
-           return response()->json(['massege'=>'updated successfully' , $res ]);
+           return response()->json(['massege'=>'updated successfully' , $res  ]);
         }
         return response()->json(['massege'=>'fail']);
 
@@ -119,6 +160,65 @@ public function logoutt(Request $request )
     
 
 }
+public function delete($id)
+{
+   $user = User::find($id);
+   if($user){
+    $user->delete();
+   return response()->json([
+    'status' => 'success',
+    'message' => 'user deleted successfully',
+]);
+}
+else {
+return response()->json([
+    'status' => 'error',
+    'message' => 'user not found (id is wrong)',
+]);
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

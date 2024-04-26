@@ -22,8 +22,18 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'phone',
+        'address',
+        'profile_photo',
+        'National_id',
+        'role',
+        'remember_token',
         
     ];
+    public function projects()
+    {
+      return $this-> hasMany('App\Models\Project' , 'user_id') ;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -43,10 +53,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function admin()
-    {
-        return $this->hasOne(Admin::class);
-    }
+    
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
