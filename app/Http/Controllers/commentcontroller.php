@@ -38,7 +38,7 @@ class commentcontroller extends Controller
     }
     public function projectcomment($id)
 {
-    $comment_project = Comment::with('user_comment')->find($id);
+    $comment_project = Comment::with('projects_comment')->find($id);
     if ($comment_project) {
         return response()->json( $comment_project );
     }

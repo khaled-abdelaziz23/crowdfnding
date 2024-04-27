@@ -25,13 +25,11 @@ class adminconttroller extends Controller
       $data = User::find($id);
       if ($data) {
         
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'post' => $data->toArray()],
-           
-            'message' => 'Post retrieved successfully',
-        ]);
+        return response()->json(
+          
+                $data,
+            
+        );
     }
     else {
         return response()->json([
@@ -89,13 +87,11 @@ class adminconttroller extends Controller
          $user->remember_token = $token;
          $user->save();
         
-            if ( auth()->guard('logintokin')->user()->role=='user') {
+            if ( auth()->guard('logintokin')) {
                 
-                return response()->json( ['user_token'=>$token ,'user_data'=>auth()->guard('logintokin')->user()]); 
+                return response()->json( ['token'=>$token ,'data'=>auth()->guard('logintokin')->user()]); 
             }
-          else {       
-                 return response()->json( ['admin_token'=>$token ,'admin_data'=>auth()->guard('logintokin')->user()]); 
-            }
+         
            
         }
   

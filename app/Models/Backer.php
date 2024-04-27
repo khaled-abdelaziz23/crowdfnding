@@ -20,7 +20,7 @@ public function projects_backer()
     }   
 public function user_backer()
     {
-       return $this->belongsTo('App\Models\Project','user_id');
+       return $this->belongsTo('App\Models\User','user_id');
     }   
     
 }

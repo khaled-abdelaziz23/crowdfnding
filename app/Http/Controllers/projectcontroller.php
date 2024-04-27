@@ -81,12 +81,12 @@ class projectcontroller extends Controller
     $project = Project::find($id);
     if ( $project->acceptans == 0) {
        
-    $request->validate([
-        'end_date'=>'required|numeric|between:1,60',
-        'photos'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:5048',
-        'second_photo'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        'videos' => 'required|mimes:mp4,ogx,oga,ogv,ogg,webm',
-        ]);
+    // $request->validate([
+    //     'end_date'=>'numeric|between:1,60',
+    //     'photos'=>'image|mimes:jpeg,png,jpg,gif,svg|max:5048',
+    //     'second_photo'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    //     'videos' => 'mimes:mp4,ogx,oga,ogv,ogg,webm',
+    //     ]);
     #project_photo
     $image_name = rand() . '.' .$request->photos->getClientOriginalExtension(); 
     $request->photos->move(public_path('/images/projectphoto'),$image_name);

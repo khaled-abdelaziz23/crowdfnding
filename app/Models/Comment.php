@@ -19,6 +19,6 @@ class Comment extends Model
     }   
 public function user_comment()
     {
-       return $this->belongsTo('App\Models\Project','user_id');
+       return $this->belongsTo('App\Models\User','user_id');
     }  
 }
