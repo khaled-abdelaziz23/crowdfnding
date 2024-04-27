@@ -34,6 +34,15 @@ class User extends Authenticatable implements JWTSubject
     {
       return $this-> hasMany('App\Models\Project' , 'user_id') ;
     }
+    public function backer_user()
+    {
+      return $this-> hasMany('App\Models\Backer' , 'user_id') ;
+    }
+    public function complaints_user()
+    {
+      return $this-> hasMany('App\Models\Complain' , 'user_id') ;
+    }
+    
 
     /**
      * The attributes that should be hidden for serialization.

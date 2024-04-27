@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminconttroller;
 use App\Http\Controllers\projectcontroller;
+use App\Http\Controllers\commentcontroller;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::post('userphoto/{id}', [adminconttroller::class , 'userphoto'])->name('us
 //#############################Projects_routes###############################/ 
 Route::get('getproject/{id}', [projectcontroller::class , 'getproject'])->name('user.getproject');
 Route::post('addproject/{user}', [projectcontroller::class , 'addproject'])->name('user.addproject');
+Route::post('editproject/{id}', [projectcontroller::class , 'editproject'])->name('project.editproject');
 Route::delete('deleteproject/{id}', [projectcontroller::class , 'deleteproject'])->name('user.deleteproject');
 Route::get('decrease', [projectcontroller::class , 'decrease'])->name('date.decrease');
 Route::get('allproject', [projectcontroller::class , 'allproject'])->name('project.allproject');
@@ -45,3 +47,22 @@ Route::get('collectedmoney', [projectcontroller::class , 'collectedmoney'])->nam
 //#############################Projects_routes###############################/ 
 
 //#############################backer_routes###############################/ 
+Route::get('backer/{id}', [projectcontroller::class , 'backer'])->name('project.backer');
+Route::get('userbacker/{id}', [projectcontroller::class , 'userbacker'])->name('user.backer');
+Route::post('backproject/{user}/{project}', [projectcontroller::class , 'backproject'])->name('backproject');
+Route::get('allbacker', [projectcontroller::class , 'allbacker'])->name('allbacker.backer');
+
+//#############################backer_routes###############################/ 
+
+//#############################complaints_routes###############################/ 
+Route::get('allcomplain', [projectcontroller::class , 'allcomplain'])->name('allcomplain.backer');
+Route::post('addcomplain/{user}/{project}', [projectcontroller::class , 'addcomplain'])->name('addcomplain');
+Route::get('addcomplaintuser/{id}', [projectcontroller::class , 'addcomplaintuser'])->name('addcomplaintuser');
+Route::get('complaintproject/{id}', [projectcontroller::class , 'complaintproject'])->name('complaintproject');
+Route::post('deletecomplaint/{id}', [projectcontroller::class , 'deletecomplaint'])->name('deletecomplaint');
+//#############################comments_routes###############################/ 
+Route::get('allcomments', [commentcontroller::class , 'usercomment'])->name('usercomment');
+Route::get('usercomment/{id}', [commentcontroller::class , 'usercomment'])->name('usercomment');
+Route::get('projectcomment/{id}', [commentcontroller::class , 'projectcomment'])->name('projectcomment');
+Route::post('commenting/{user}/{project}', [commentcontroller::class , 'commenting'])->name('commenting');
+Route::post('deletecomment/{id}', [commentcontroller::class , 'deletecomment'])->name('deletecomment');

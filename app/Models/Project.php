@@ -29,4 +29,12 @@ class Project extends Model
     {
        return $this->belongsTo('App\Models\User','user_id');
     }
+    public function backers()
+    {
+      return $this-> hasMany('App\Models\Backer' , 'project_id') ;
+    }
+    public function complaints_project()
+    {
+      return $this-> hasMany('App\Models\Complain' , 'project_id') ;
+    }
 }
