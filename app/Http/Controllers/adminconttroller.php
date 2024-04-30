@@ -177,6 +177,21 @@ return response()->json([
 
 }
 
+public function search_user(Request $request)
+{
+  
+    $search = $request->search;
+    $user = User::where(function($query) use ($search){
+        $query->where('name' , 'like' , "%$search%")
+        ->orwhere('email' , 'like' ,"%$search%" )
+        ->orwhere('phone' , 'like' ,"%$search%" )
+        ->orwhere('role' , 'like' ,"%$search%" )
+        ->orwhere('created_at' , 'like' ,"%$search%" )
+        ;})->get();
+        return response()->json($user);
+}
+
+
 
 
 

@@ -6,13 +6,17 @@ use App\Models\Project;
 use App\Models\Backer;
 use App\Models\Comment;
 use App\Models\Complain;
+use App\Models\Reward;
 use Illuminate\Http\Request;
+use Srmklive\PayPal\Services\ExpressCheckout;
 
 class commentcontroller extends Controller
 {
     public function allcomments()
     {
-        $comments = Comment::get();
+        $comments = Comment::join('users' , 'comments.user_id', '=' , 'users.id')
+        ->join('projects' , 'comments.project_id','=','projects.id')
+        ->select('comments.*' , 'users.name as user_name' , 'projects.title as project_title' ,   'users.profile_photo as user_profile_photo'  )->get();
         return response()->json( $comments);
     }
     public function commenting(Request $request ,$user, $project)
@@ -60,23 +64,84 @@ class commentcontroller extends Controller
 
 
 }
+#########################paypal#########################################
+
+public function payment(Request $request ,$user, $project ,$reward)
+{
+    $reward = Reward::find($reward);
+    $project = Project::find($project);
+    $data = [];
+    $data['items'] = [
+        [
+            'name' => $reward->id,
+            'price' => $reward->reward_pledge_amount ,
+            'desc'  => $project->id ,
+            'qty' => 1,
+            
+            
+        ]
+    ];
+//    strip
+//    
+     $data['invoice_id'] = User::find($user)->id;
+     $data['invoice_description'] = "Order #{$data['invoice_id']} Invoice";
+     $data['return_url'] = route('payment.success');
+     $data['cancel_url'] = route('payment.cancel');
+     $data['total'] = $reward->reward_pledge_amount ;
+     
+    $provider = new ExpressCheckout;
+      
+    $response = $provider->setExpressCheckout($data);
+    
+    $response = $provider->setExpressCheckout($data, true);
+    // dd($response);
+    return redirect($response['paypal_link']);
+}
 
 
+public function cancel()
+{
+    dd('Your payment is canceled.');
+}
 
+public function success(Request $request)
+{
+    $provider = new ExpressCheckout;
+    $response = $provider->getExpressCheckoutDetails($request->token);
 
-
-
-
-
-
-
-
-
-
-
-
+    if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
+       
+        //  dd($response);
+            $backer = new Backer;
+            $backer->pledge_amount = $response['PAYMENTREQUEST_0_AMT'];
+            $backer->user_id = $response['PAYMENTREQUEST_0_INVNUM'];
+            $backer->project_id = $response['L_PAYMENTREQUEST_0_DESC0'];
+            $backer->reward_id = $response['L_PAYMENTREQUEST_0_NAME0'];
+            $res = $backer->save();
+            dd('success payment.');
+             
+    }
+    else {
+        dd('Please try again later.');
+    }
+    
+}
 
 
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

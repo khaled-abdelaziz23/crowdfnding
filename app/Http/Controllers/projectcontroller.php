@@ -6,7 +6,7 @@ use App\Models\Project;
 use App\Models\Backer;
 use App\Models\Complain;
 use Illuminate\Http\Request;
-
+use App\Http\Resources\BackerResource;
 
 class projectcontroller extends Controller
 {
@@ -75,18 +75,18 @@ class projectcontroller extends Controller
           return response()->json(['message'=>'project added succfully','user_data' => $project]);
         
            
-        }
-        public function editproject(Request $request,$id)
+ }
+    public function editproject(Request $request,$id)
 { 
     $project = Project::find($id);
     if ( $project->acceptans == 0) {
        
-    // $request->validate([
-    //     'end_date'=>'numeric|between:1,60',
-    //     'photos'=>'image|mimes:jpeg,png,jpg,gif,svg|max:5048',
-    //     'second_photo'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    //     'videos' => 'mimes:mp4,ogx,oga,ogv,ogg,webm',
-    //     ]);
+    $request->validate([
+        'end_date'=>'numeric|between:1,60',
+        'photos'=>'image|mimes:jpeg,png,jpg,gif,svg|max:5048',
+        'second_photo'=>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'videos' => 'mimes:mp4,ogx,oga,ogv,ogg,webm',
+        ]);
     #project_photo
     $image_name = rand() . '.' .$request->photos->getClientOriginalExtension(); 
     $request->photos->move(public_path('/images/projectphoto'),$image_name);
@@ -201,27 +201,42 @@ public function userbacker($id)
         return response()->json(['massege'=>' fail (wronge id)']);
     }
 } 
-public function backproject(Request $request ,$user, $project)
+
+public function allbackers()
 {
-    $the_user = User::find($user);
-    $the_project = Project::find($project);
-    $backer = new Backer;
-    $backer->pledge_amount = $request->pledge_amount;
-    $backer->user_id =  $the_user->id;
-    $backer->project_id = $the_project->id;
-    $res = $backer->save();
-    return response()->json(['message'=>' you backed succfully','user_data' => $backer]);
+    // Retrieve all backer data along with corresponding project titles and user names
+    $backersWithProjectAndUserName = Backer::join('projects', 'backers.project_id', '=', 'projects.id')
+        ->join('users', 'backers.user_id', '=', 'users.id')
+        ->join('rewards', 'backers.reward_id', '=', 'rewards.id')
+        ->select('backers.*', 'projects.title as project_title', 'users.name as user_name', 'rewards.reward_name as reward_name')
+        ->get();
+
+    // Return the integrated data as a JSON response
+    return response()->json($backersWithProjectAndUserName);
 }
-public function allbacker()
+
+public function count_project_backer($id)
 {
-    $allbacker = Backer::get();
-    return response()->json($allbacker);
+    // Retrieve the project along with its backers
+    $project = Project::with('backers')->find($id);
+    
+    // Count the number of backers
+    $num_backers = $project->backers->count();
+    
+    // Add the number of backers to the project object
+    $project->backers_count = $num_backers;
+    $project->save();
+    // Return the project data with the count of backers as JSON response
+    return response()->json($project);
 }
+
 public function allcomplain()
 {
-    $allbacker = Complain::get();
+    $allbacker = Complain::join('users' , 'complaints.user_id' , '=' , 'users.id')
+    ->select('complaints.*' , 'users.name as user_name')->get();
     return response()->json($allbacker);
 }
+
 public function addcomplain(Request $request ,$user )
 {
     $the_user = User::find($user);
@@ -251,6 +266,49 @@ public function deletecomplaint($id)
         return response()->json(['massege'=>' complaint deleted successfully']);
     }
 }
+public function search_project(Request $request)
+{
+  
+    $search = $request->search;
+    $project = Project::where(function($query) use ($search){
+        $query->where('title' , 'like' , "%$search%")
+        ->orwhere('description' , 'like' ,"%$search%" )
+        ->orwhere('acceptans' , 'like' ,"%$search%" )
+        ->orwhere('goal_amount' , 'like' ,"%$search%" )
+        ->orwhere('end_date' , 'like' ,"%$search%" )
+        ->orwhere('category' , 'like' ,"%$search%" )
+        ;})->get();
+        return response()->json($project);
+}
+
+public function search_backer(Request $request)
+{
+  
+    $search = $request->search;
+    $backer = Backer::join('projects', 'backers.project_id', '=', 'projects.id')
+    ->join('users', 'backers.user_id', '=', 'users.id')
+    ->join('rewards', 'backers.reward_id', '=', 'rewards.id')
+    ->select('backers.*', 'projects.title as project_title', 'users.name as user_name', 'rewards.reward_name as reward_name')
+    ->where(function($query) use ($search){
+        $query->where('users.name' , 'like' , "%$search%")
+        ->orwhere('pledge_amount' , 'like' ,"%$search%" )
+        ->orwhere('pledge_date' , 'like' ,"%$search%" )
+        ->orwhere('projects.title' , 'like' ,"%$search%" )
+        ->orwhere('rewards.reward_name' , 'like' ,"%$search%" );})
+        ->get();
+        return response()->json($backer);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

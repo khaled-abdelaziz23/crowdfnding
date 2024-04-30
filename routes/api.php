@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminconttroller;
 use App\Http\Controllers\projectcontroller;
 use App\Http\Controllers\commentcontroller;
+use App\Http\Controllers\rewardcontroller;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +52,9 @@ Route::get('collectedmoney', [projectcontroller::class , 'collectedmoney'])->nam
 Route::get('backer/{id}', [projectcontroller::class , 'backer'])->name('project.backer');
 Route::get('userbacker/{id}', [projectcontroller::class , 'userbacker'])->name('user.backer');
 Route::post('backproject/{user}/{project}', [projectcontroller::class , 'backproject'])->name('backproject');
-Route::get('allbacker', [projectcontroller::class , 'allbacker'])->name('allbacker.backer');
+Route::get('allbackers', [projectcontroller::class , 'allbackers'])->name('allbacker.backer');
+Route::get('count_project_backer/{id}', [projectcontroller::class , 'count_project_backer'])->name('allbacker');
+
 
 //#############################backer_routes###############################/ 
 
@@ -60,9 +63,29 @@ Route::get('allcomplain', [projectcontroller::class , 'allcomplain'])->name('all
 Route::post('addcomplain/{user}', [projectcontroller::class , 'addcomplain'])->name('addcomplain');
 Route::get('complaintuser/{id}', [projectcontroller::class , 'complaintuser'])->name('addcomplaintuser');
 Route::post('deletecomplaint/{id}', [projectcontroller::class , 'deletecomplaint'])->name('deletecomplaint');
+//#############################complaints_routes###############################/ 
+
 //#############################comments_routes###############################/ 
 Route::get('allcomments', [commentcontroller::class , 'allcomments'])->name('allcomments');
 Route::get('usercomment/{id}', [commentcontroller::class , 'usercomment'])->name('usercomment');
 Route::get('projectcomment/{id}', [commentcontroller::class , 'projectcomment'])->name('projectcomment');
 Route::post('commenting/{user}/{project}', [commentcontroller::class , 'commenting'])->name('commenting');
 Route::post('deletecomment/{id}', [commentcontroller::class , 'deletecomment'])->name('deletecomment');
+//#############################comments_routes###############################/ 
+
+//#############################paypal_routes###############################/ 
+Route::get('payment/{user}/{project}/{reward}', [commentcontroller::class , 'payment'])->name('payment');
+Route::get('cancel', [commentcontroller::class , 'cancel'])->name('payment.cancel');
+Route::get('payment/success', [commentcontroller::class , 'success'])->name('payment.success');
+
+//#############################reward_routes###############################/ 
+Route::post('rewarding/{project}', [rewardcontroller::class , 'rewarding'])->name('rewarding.add');
+Route::get('allreward', [rewardcontroller::class , 'allreward'])->name('allreward.view'); 
+Route::post('deletereward/{id}', [rewardcontroller::class , 'deletereward'])->name('deletereward.view'); 
+
+##################################search route###############################
+Route::get('search_user', [adminconttroller::class , 'search_user'])->name('search_user.view'); 
+Route::get('search_project', [projectcontroller::class , 'search_project'])->name('search_project.view'); 
+Route::get('search_backer', [projectcontroller::class , 'search_backer'])->name('search_backer.view'); 
+Route::get('search_complaint', [projectcontroller::class , 'search_complaint'])->name('search_complaint.view'); 
+Route::get('search_reward', [rewardcontroller::class , 'search_reward'])->name('search_reward.view'); 

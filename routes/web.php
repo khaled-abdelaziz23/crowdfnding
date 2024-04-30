@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\adminconttroller;
-
+use App\Http\Controllers\commentcontroller;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
